@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StyleHub | Fashion Store</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f7f5f3;color:#292522}
+header{background:#211c20;color:white;padding:17px 6%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.logo{font-size:25px;font-weight:bold;letter-spacing:1px}.logo span{color:#e9a6a9}
+nav{display:flex;gap:8px;flex-wrap:wrap}button,.btn{border:0;border-radius:7px;padding:10px 14px;background:#b85d70;color:white;cursor:pointer;font-weight:bold}
+nav button{background:transparent;color:white}.navbtn:hover,button:hover{opacity:.82}
+main{max-width:1150px;margin:25px auto;padding:0 18px}.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(110deg,#3b2830,#98616a);color:white;padding:48px 35px;border-radius:15px;margin-bottom:22px}
+.hero h1{font-size:38px;margin:0 0 10px}.hero p{max-width:600px;line-height:1.6}
+h2{margin:10px 0 18px}.muted{color:#716b68}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:17px}
+.card{background:white;border-radius:12px;padding:15px;box-shadow:0 3px 12px #0000000d}
+.photo{height:155px;border-radius:9px;background:linear-gradient(135deg,#f2d9d8,#d9c6bd);display:flex;align-items:center;justify-content:center;font-size:55px}
+.price{font-weight:bold;color:#a43f59;font-size:18px}.tag{display:inline-block;background:#f7e8eb;color:#963e55;padding:5px 9px;border-radius:20px;font-size:12px}
+input,select,textarea{padding:11px;border:1px solid #d9d2cf;border-radius:7px;width:100%;margin:6px 0 12px;font:inherit}
+label{font-size:14px;font-weight:bold}form{max-width:520px;background:white;padding:20px;border-radius:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
+table{width:100%;border-collapse:collapse;background:white;margin:12px 0}th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}th{background:#f2e8e9}
+footer{text-align:center;color:#777;padding:25px}
+.notice{padding:12px;background:#f7e8eb;border-radius:8px;margin:12px 0}
+@media(max-width:600px){.hero h1{font-size:29px}header{justify-content:center}nav{justify-content:center}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">STYLE<span>HUB</span></div>
+ <nav>
+  <button class="navbtn" onclick="go('home')">Home</button>
+  <button class="navbtn" onclick="go('shop')">Shop</button>
+  <button class="navbtn" onclick="go('wishlist')">Wishlist</button>
+  <button class="navbtn" onclick="go('cart')">Cart (<span id="cartCount">0</span>)</button>
+  <button class="navbtn" onclick="go('orders')">My Orders</button>
+  <button class="navbtn" onclick="go('account')">Account</button>
+  <button class="navbtn" onclick="go('admin')">Admin</button>
+ </nav>
+</header>
+<main>
+<section id="home" class="page active">
+ <div class="hero"><span class="tag">NEW SEASON COLLECTION</span><h1>Find Your Style.<br>Wear Your Confidence.</h1><p>Explore clothing, footwear and accessories for men, women and children. Discover everyday essentials, formal looks and seasonal favourites.</p><button onclick="go('shop')">Explore Collection</button></div>
+ <h2>Shop by Category</h2><div class="grid">
+  <div class="card"><div class="photo">👗</div><h3>Women</h3><p class="muted">Dresses, tops, ethnic and casual wear</p><button onclick="setCategory('Women')">Shop Women</button></div>
+  <div class="card"><div class="photo">👔</div><h3>Men</h3><p class="muted">Shirts, trousers, jackets and more</p><button onclick="setCategory('Men')">Shop Men</button></div>
+  <div class="card"><div class="photo">🧒</div><h3>Kids</h3><p class="muted">Comfortable outfits for children</p><button onclick="setCategory('Kids')">Shop Kids</button></div>
+  <div class="card"><div class="photo">👟</div><h3>Footwear & Accessories</h3><p class="muted">Shoes, bags, watches and accessories</p><button onclick="setCategory('Accessories')">Explore</button></div>
+ </div>
+ <div class="notice">Exclusive offer: Get 15% off selected styles during our flash sale.</div>
+ <h2>Popular Picks</h2><div id="homeProducts" class="grid"></div>
+</section>
+<section id="shop" class="page">
+ <h2>Fashion Catalogue</h2><p class="muted">Browse categories and filter products to find your style.</p>
+ <div class="row"><input id="search" placeholder="Search products..." oninput="renderProducts()"><select id="category" onchange="renderProducts()"><option value="">All categories</option><option>Women</option><option>Men</option><option>Kids</option><option>Accessories</option></select><select id="sort" onchange="renderProducts()"><option value="">Sort by</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option></select></div>
+ <div id="products" class="grid"></div>
+</section>
+<section id="details" class="page"><h2>Product Details</h2><div id="detailContent"></div></section>
+<section id="wishlist" class="page"><h2>My Wishlist</h2><div id="wishItems" class="grid"></div></section>
+<section id="cart" class="page"><h2>Shopping Cart</h2><div id="cartItems"></div><button onclick="go('checkout')">Proceed to Checkout</button></section>
+<section id="checkout" class="page"><h2>Checkout</h2><div id="checkoutSummary" class="card"></div><form onsubmit="placeOrder(event)"><label>Customer name</label><input id="buyer" required><label>Email address</label><input id="email" type="email" required><label>Delivery address</label><textarea id="address" required></textarea><label>Payment method</label><select id="payment"><option>UPI</option><option>Credit / Debit Card</option><option>Cash on Delivery</option></select><button type="submit">Place Order</button></form></section>
+<section id="orders" class="page"><h2>Order History & Tracking</h2><div id="orderList"></div></section>
+<section id="account" class="page"><h2>Customer Account</h2><div class="grid"><form onsubmit="login(event)"><h3>Login</h3><label>Email</label><input id="loginEmail" type="email" required><label>Password</label><input id="loginPass" type="password" required><button>Login</button></form><form onsubmit="register(event)"><h3>Create Account</h3><label>Name</label><input id="regName" required><label>Email</label><input id="regEmail" type="email" required><label>Password</label><input id="regPass" type="password" required><button>Register</button></form></div><p id="accountMsg" class="notice">Register or log in to your StyleHub demo account.</p></section>
+<section id="admin" class="page"><h2>Administrator Dashboard</h2><form onsubmit="adminLogin(event)"><label>Admin username</label><input id="adminUser" required><label>Password</label><input id="adminPass" type="password" required><button>Admin Login</button></form><div id="adminPanel" style="display:none"><h3>Add / Update Product</h3><form onsubmit="saveProduct(event)"><input id="pid" type="hidden"><label>Product name</label><input id="pname" required><label>Category</label><select id="pcat"><option>Women</option><option>Men</option><option>Kids</option><option>Accessories</option></select><label>Price (₹)</label><input id="pprice" type="number" min="1" required><label>Description</label><textarea id="pdesc" required></textarea><label>Stock quantity</label><input id="pstock" type="number" min="0" required><button>Save Product</button></form><h3>Manage Products</h3><div id="adminProducts"></div><h3>Customer Checkout Information</h3><div id="customerInfo"></div></div></section>
+<section id="returns" class="page"><h2>Returns & Exchanges</h2><p>Customers can request a return or size exchange from their order history within 7 days of delivery. This demonstration records the request locally.</p><form onsubmit="returnRequest(event)"><label>Order ID</label><input id="returnId" required><label>Request type</label><select id="returnType"><option>Return</option><option>Size Exchange</option></select><label>Reason</label><textarea id="returnReason" required></textarea><button>Submit Request</button></form><p id="returnMsg"></p></section>
+</main>
+<footer>© 2026 StyleHub Fashion Store | Demo ecommerce website</footer>
+<script>
+const starter=[
+{id:1,name:'Floral Summer Dress',cat:'Women',price:1499,desc:'Lightweight floral dress for casual outings. Available in S, M, L and XL.',stock:12,icon:'👗'},
+{id:2,name:'Classic Denim Jacket',cat:'Men',price:2199,desc:'Everyday denim jacket with a comfortable fit.',stock:8,icon:'🧥'},
+{id:3,name:'Kids Casual Set',cat:'Kids',price:899,desc:'Soft cotton outfit designed for daily comfort.',stock:15,icon:'🧒'},
+{id:4,name:'Everyday Sneakers',cat:'Accessories',price:1799,desc:'Versatile sneakers for everyday wear. Check the size guide before ordering.',stock:10,icon:'👟'},
+{id:5,name:'Formal White Shirt',cat:'Men',price:1199,desc:'Smart formal shirt suitable for office and events.',stock:9,icon:'👔'},
+{id:6,name:'Handbag',cat:'Accessories',price:1599,desc:'Stylish handbag with a spacious main compartment.',stock:6,icon:'👜'},
+{id:7,name:'Ethnic Kurta',cat:'Women',price:1899,desc:'Comfortable ethnic kurta for festive and casual occasions.',stock:7,icon:'🥻'},
+{id:8,name:'Kids Party Dress',cat:'Kids',price:1299,desc:'Colourful party dress with a soft inner lining.',stock:5,icon:'🎀'}
+];
+let products=JSON.parse(localStorage.getItem('shProducts')||'null')||starter;
+let cart=JSON.parse(localStorage.getItem('shCart')||'[]'),wishes=JSON.parse(localStorage.getItem('shWish')||'[]'),orders=JSON.parse(localStorage.getItem('shOrders')||'[]'),customers=JSON.parse(localStorage.getItem('shCustomers')||'[]'),current=null;
+function persist(){localStorage.setItem('shProducts',JSON.stringify(products));localStorage.setItem('shCart',JSON.stringify(cart));localStorage.setItem('shWish',JSON.stringify(wishes));localStorage.setItem('shOrders',JSON.stringify(orders));localStorage.setItem('shCustomers',JSON.stringify(customers));updateCount()}
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='shop')renderProducts();if(id==='cart')renderCart();if(id==='wishlist')renderWish();if(id==='orders')renderOrders();if(id==='checkout')renderCheckout();if(id==='adminProducts')renderAdmin();window.scrollTo(0,0)}
+function updateCount(){document.getElementById('cartCount').textContent=cart.reduce((a,b)=>a+b.qty,0)}
+function card(p){return `<div class="card"><div class="photo">${p.icon||'🛍️'}</div><span class="tag">${p.cat}</span><h3>${p.name}</h3><p class="price">₹${p.price}</p><p class="muted">${p.desc}</p><p class="muted">Available: ${p.stock}</p><button onclick="showDetails(${p.id})">View Details</button> <button onclick="addCart(${p.id})">Add to Cart</button></div>`}
+function renderProducts(){let q=document.getElementById('search').value.toLowerCase(),c=document.getElementById('category').value,s=document.getElementById('sort').value;let a=products.filter(p=>(p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q))&&(!c||p.cat===c));if(s==='low')a.sort((x,y)=>x.price-y.price);if(s==='high')a.sort((x,y)=>y.price-x.price);document.getElementById('products').innerHTML=a.length?a.map(card).join(''):'<p>No matching products found.</p>'}
+function setCategory(c){go('shop');document.getElementById('category').value=c;renderProducts()}
+function showDetails(id){let p=products.find(x=>x.id===id);current=id;document.getElementById('detailContent').innerHTML=`<div class="card"><div class="photo">${p.icon||'🛍️'}</div><h3>${p.name}</h3><p class="price">₹${p.price}</p><p>${p.desc}</p><p>Category: ${p.cat} | Stock: ${p.stock}</p><p><b>Size guide:</b> XS (extra small), S (small), M (medium), L (large), XL (extra large). Check the product label for available sizes.</p><p>Customer reviews: ★★★★★ "Good quality and value for money." (Demo review)</p><button onclick="addCart(${id})">Add to Cart</button> <button onclick="toggleWish(${id})">Add to Wishlist</button></div>`;go('details')}
+function addCart(id){let p=products.find(x=>x.id===id);if(!p||p.stock<1){alert('Item is currently unavailable');return}let x=cart.find(x=>x.id===id);if(x)x.qty=Math.min(x.qty+1,p.stock);else cart.push({id,qty:1});persist();alert('Added to cart');}
+function changeQty(id,v){let x=cart.find(x=>x.id===id),p=products.find(p=>p.id===id);if(!x)return;x.qty=Math.max(1,Math.min(p.stock,Number(v)||1));persist();renderCart()}
+function removeCart(id){cart=cart.filter(x=>x.id!==id);persist();renderCart()}
+function renderCart(){let el=document.getElementById('cartItems');if(!cart.length){el.innerHTML='<p>Your cart is empty.</p>';return}el.innerHTML=cart.map(x=>{let p=products.find(p=>p.id===x.id);return `<div class="card row"><div><b>${p.name}</b><p>₹${p.price} each</p></div><div><label>Quantity</label><input type="number" min="1" max="${p.stock}" value="${x.qty}" onchange="changeQty(${p.id},this.value)"></div><div><b>₹${p.price*x.qty}</b><p><button onclick="removeCart(${p.id})">Remove</button></p></div></div>`}).join('')+`<h3>Total: ₹${cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0)}</h3>`}
+function toggleWish(id){wishes=wishes.includes(id)?wishes.filter(x=>x!==id):[...wishes,id];persist();alert('Wishlist updated')}
+function renderWish(){document.getElementById('wishItems').innerHTML=wishes.length?products.filter(p=>wishes.includes(p.id)).map(card).join(''):'<p>No wishlist items yet.</p>'}
+function renderCheckout(){let total=cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0);document.getElementById('checkoutSummary').innerHTML=`<h3>Order Summary</h3><p>${cart.length} product line(s)</p><h3>Total: ₹${total}</h3>`}
+function placeOrder(e){e.preventDefault();if(!cart.length){alert('Your cart is empty');return}let id='SH'+Date.now().toString().slice(-7);let order={id,items:cart.map(x=>({...x})),total:cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0),name:buyer.value,email:email.value,address:address.value,payment:payment.value,status:'Order Placed'};cart.forEach(x=>{let p=products.find(p=>p.id===x.id);p.stock-=x.qty});orders.unshift(order);customers.push({name:order.name,email:order.email,orderId:id,total:order.total});cart=[];persist();alert('Order placed successfully. Order ID: '+id);go('orders')}
+function renderOrders(){document.getElementById('orderList').innerHTML=orders.length?orders.map(o=>`<div class="card"><h3>Order ${o.id}</h3><p>Customer: ${o.name} | Total: ₹${o.total}</p><p>Status: <b>${o.status}</b></p><p>${o.items.map(x=>{let p=products.find(p=>p.id===x.id);return (p?p.name:'Product')+' × '+x.qty}).join(', ')}</p><p>Payment: ${o.payment}</p><button onclick="go('returns');document.getElementById('returnId').value='${o.id}'">Return / Exchange</button></div>`).join(''):'<p>No orders placed yet.</p>'}
+function register(e){e.preventDefault();let c={name:regName.value,email:regEmail.value,password:regPass.value};customers.push(c);persist();accountMsg.textContent='Registration successful. You can now log in.';e.target.reset()}
+function login(e){e.preventDefault();let c=customers.find(x=>x.email===loginEmail.value&&x.password===loginPass.value);accountMsg.textContent=c?'Welcome back, '+c.name+'!':'Account not found. Please register first.'}
+function adminLogin(e){e.preventDefault();if(adminUser.value==='admin'&&adminPass.value==='admin123'){adminPanel.style.display='block';renderAdmin()}else alert('Invalid admin login')}
+function saveProduct(e){e.preventDefault();let id=Number(pid.value);let p={id:id||Date.now(),name:pname.value,cat:pcat.value,price:Number(pprice.value),desc:pdesc.value,stock:Number(pstock.value),icon:'🛍️'};if(id)products=products.map(x=>x.id===id?p:x);else products.push(p);persist();e.target.reset();pid.value='';renderAdmin();alert('Product saved')}
+function renderAdmin(){adminProducts.innerHTML='<table><tr><th>Item</th><th>Price</th><th>Stock</th><th>Actions</th></tr>'+products.map(p=>`<tr><td>${p.name}</td><td>₹${p.price}</td><td>${p.stock}</td><td><button onclick="editProduct(${p.id})">Edit</button> <button onclick="deleteProduct(${p.id})">Remove</button></td></tr>`).join('')+'</table>';customerInfo.innerHTML=customers.length?'<table><tr><th>Customer</th><th>Email</th><th>Order ID</th><th>Total</th></tr>'+customers.map(c=>`<tr><td>${c.name}</td><td>${c.email}</td><td>${c.orderId||'-'}</td><td>${c.total?'₹'+c.total:'-'}</td></tr>`).join('')+'</table>':'<p>No customer checkout records yet.</p>'}
+function editProduct(id){let p=products.find(x=>x.id===id);pid.value=p.id;pname.value=p.name;pcat.value=p.cat;pprice.value=p.price;pdesc.value=p.desc;pstock.value=p.stock;window.scrollTo(0,0)}
+function deleteProduct(id){if(confirm('Remove this item?')){products=products.filter(p=>p.id!==id);persist();renderAdmin()}}
+function returnRequest(e){e.preventDefault();returnMsg.textContent='Your '+returnType.value.toLowerCase()+' request for order '+returnId.value+' has been recorded (demo).';e.target.reset()}
+document.getElementById('homeProducts').innerHTML=products.slice(0,4).map(card).join('');updateCount();
+</script>
+</body>
+</html>
