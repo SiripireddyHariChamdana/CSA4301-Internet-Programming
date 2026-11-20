@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhonePay - Phone Bill Payment Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f7fb;color:#172b3a}
+header{background:#12344a;color:white;padding:17px 6%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.brand{font-size:23px;font-weight:bold}nav{display:flex;gap:15px;flex-wrap:wrap}nav a{color:white;text-decoration:none;font-size:14px;cursor:pointer}
+main{max-width:1050px;margin:30px auto;padding:0 18px}.hero{background:linear-gradient(120deg,#123b56,#16818b);color:white;padding:34px;border-radius:16px;margin-bottom:20px}
+h1{margin:0 0 12px;font-size:30px}h2{color:#173c52;margin-top:0}p{line-height:1.5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card,.panel{background:white;padding:22px;border-radius:13px;box-shadow:0 4px 18px #18354a12;margin-bottom:18px}
+.stat{font-size:25px;font-weight:bold;color:#087e8b;margin-top:8px}.muted{color:#697987}
+button,.btn{display:inline-block;border:0;border-radius:8px;padding:11px 17px;background:#087e8b;color:white;text-decoration:none;font-weight:bold;cursor:pointer}
+button.secondary,.btn.secondary{background:#e5f0f4;color:#17445a}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+form{display:grid;gap:13px;max-width:620px}label{font-weight:bold;font-size:14px}input,select{width:100%;padding:11px;margin-top:6px;border:1px solid #cbd5df;border-radius:7px;font-size:15px}
+.notice{background:#e7f6f2;border-left:4px solid #078575;padding:12px;margin:14px 0;border-radius:6px}.error{background:#fff0f0;border-left-color:#c0392b}
+table{width:100%;border-collapse:collapse;background:white}th,td{padding:11px;text-align:left;border-bottom:1px solid #e3eaf0;font-size:14px}th{background:#eaf2f5}
+.page{display:none}.page.active{display:block}footer{text-align:center;color:#75818b;padding:22px;font-size:13px}
+@media(max-width:600px){header{padding:15px}h1{font-size:25px}.hero{padding:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">PhonePay</div>
+  <nav>
+    <a onclick="showPage('home')">Home</a>
+    <a onclick="showPage('login')">Customer Login</a>
+    <a onclick="showPage('register')">Register</a>
+    <a onclick="showPage('adminLogin')">Admin</a>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+ <div class="hero"><h1>Phone Bill Payment Portal</h1><p>View your monthly phone bill, check due dates, pay bills and track your payment history easily.</p>
+ <div class="actions"><button onclick="showPage('login')">Customer Login</button><button class="secondary" onclick="showPage('register')">Create Account</button></div></div>
+ <div class="grid">
+  <div class="card"><h2>Customer Services</h2><p>Check your current bill, outstanding amount and payment history.</p><button onclick="showPage('login')">Customer Login</button></div>
+  <div class="card"><h2>Online Bill Payment</h2><p>Pay the full bill or enter a custom payment amount.</p><button onclick="showPage('login')">Pay Bill</button></div>
+  <div class="card"><h2>Administration</h2><p>Manage monthly bills, billing dates and late payment fines.</p><button onclick="showPage('adminLogin')">Admin Login</button></div>
+ </div>
+ <div class="notice">Late payment fine: ₹10 per day after the due date.</div>
+</section>
+
+<section id="register" class="page">
+ <div class="panel"><h1>Customer Registration</h1><p class="muted">Create an account to use the phone bill payment portal.</p>
+ <form id="registerForm">
+  <label>Full Name<input id="regName" required></label>
+  <label>Mobile Number<input id="regPhone" maxlength="10" pattern="[0-9]{10}" required></label>
+  <label>Email Address<input id="regEmail" type="email" required></label>
+  <label>Password<input id="regPassword" type="password" minlength="4" required></label>
+  <button type="submit">Register</button>
+ </form><div id="registerMsg"></div><p>Already registered? <a href="#" onclick="showPage('login')">Login here</a>.</p></div>
+</section>
+
+<section id="login" class="page">
+ <div class="panel"><h1>Customer Login</h1>
+ <form id="loginForm"><label>Mobile Number<input id="loginPhone" maxlength="10" required></label><label>Password<input id="loginPassword" type="password" required></label><button type="submit">Login</button></form>
+ <div id="loginMsg"></div><p>New customer? <a href="#" onclick="showPage('register')">Register here</a>.</p></div>
+</section>
+
+<section id="dashboard" class="page">
+ <div class="hero"><h1 id="welcome">Customer Dashboard</h1><p>Mobile Number: <b id="accountPhone"></b></p>
+ <div class="actions"><button onclick="showPage('payment')">Pay Bill</button><button class="secondary" onclick="showPage('history')">Payment History</button><button class="secondary" onclick="logout()">Logout</button></div></div>
+ <div class="grid">
+  <div class="card"><p class="muted">Current Monthly Bill</p><div class="stat" id="billAmount">—</div></div>
+  <div class="card"><p class="muted">Due Date</p><div class="stat" id="dueDate">—</div></div>
+  <div class="card"><p class="muted">Late Fine</p><div class="stat" id="lateFine">₹0</div></div>
+  <div class="card"><p class="muted">Outstanding Amount</p><div class="stat" id="outstanding">—</div></div>
+ </div>
+</section>
+
+<section id="payment" class="page">
+ <div class="panel"><h1>Pay Phone Bill</h1><p>Outstanding amount: <b id="payBalance">—</b></p>
+ <form id="paymentForm"><label>Payment Amount (₹)<input id="payAmount" type="number" min="1" step="0.01" required></label>
+ <label>Payment Method<select id="payMethod" required><option value="">Select payment method</option><option>Credit Card</option><option>Debit Card</option><option>Net Banking</option><option>Mobile Wallet</option></select></label>
+ <button type="submit">Pay Now</button></form><div id="paymentMsg"></div>
+ <p class="muted">This is a demonstration payment page. No real money is transferred.</p><button class="secondary" onclick="showPage('dashboard')">Back to Dashboard</button></div>
+</section>
+
+<section id="receipt" class="page">
+ <div class="panel"><h1>Payment Confirmation</h1><div class="notice">Your payment has been recorded successfully.</div><div id="receiptInfo"></div>
+ <div class="actions"><button onclick="window.print()">Print Receipt</button><button class="secondary" onclick="showPage('dashboard')">Dashboard</button><button class="secondary" onclick="showPage('history')">Payment History</button></div>
+ <p class="muted">Email receipt sending is not connected in this demo.</p></div>
+</section>
+
+<section id="history" class="page">
+ <div class="panel"><h1>Payment History</h1><table><thead><tr><th>Receipt ID</th><th>Date</th><th>Method</th><th>Amount</th></tr></thead><tbody id="historyRows"></tbody></table>
+ <div class="actions"><button class="secondary" onclick="showPage('dashboard')">Back to Dashboard</button></div></div>
+</section>
+
+<section id="adminLogin" class="page">
+ <div class="panel"><h1>Admin Login</h1><p class="muted">Demo username: <b>admin</b> | Password: <b>admin123</b></p>
+ <form id="adminLoginForm"><label>Username<input id="adminUsername" required></label><label>Password<input id="adminPassword" type="password" required></label><button type="submit">Login as Admin</button></form><div id="adminLoginMsg"></div></div>
+</section>
+
+<section id="adminDashboard" class="page">
+ <div class="hero"><h1>Admin Dashboard</h1><p>Add monthly bills for registered customers and set billing dates and payment due dates.</p>
+ <div class="actions"><button onclick="adminLogout()">Logout</button><button class="secondary" onclick="showPage('home')">Home</button></div></div>
+ <div class="panel"><h2>Update Monthly Bill</h2><form id="billForm">
+ <label>Customer Mobile Number<input id="billPhone" maxlength="10" required></label>
+ <label>Billing Start Date<input id="startDate" type="date" required></label>
+ <label>Billing End Date<input id="endDate" type="date" required></label>
+ <label>Bill Amount (₹)<input id="newBillAmount" type="number" min="0" step="0.01" required></label>
+ <label>Last Date for Payment<input id="newDueDate" type="date" required></label>
+ <button type="submit">Save Monthly Bill</button></form><div id="billMsg"></div></div>
+ <div class="panel"><h2>Added Bills</h2><table><thead><tr><th>Mobile</th><th>Billing Period</th><th>Amount</th><th>Due Date</th></tr></thead><tbody id="adminBillRows"></tbody></table></div>
+</section>
+</main>
+<footer>PhonePay Demo Portal | Phone Bill Payment System</footer>
+
+<script>
+const getData=()=>JSON.parse(localStorage.getItem('phonePayData')||'{"customers":[],"bills":[],"payments":[]}');
+const saveData=d=>localStorage.setItem('phonePayData',JSON.stringify(d));
+const money=n=>'₹'+Number(n||0).toFixed(2);
+let currentPhone=localStorage.getItem('phonePayCurrent')||'';
+function showPage(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ const page=document.getElementById(id);if(page)page.classList.add('active');
+ if(id==='dashboard')loadDashboard();
+ if(id==='payment')loadPayment();
+ if(id==='history')loadHistory();
+ if(id==='adminDashboard')loadAdminBills();
+ window.scrollTo(0,0);
+}
+function message(id,text,error=false){const el=document.getElementById(id);el.textContent=text;el.className='notice'+(error?' error':'');}
+function registerCustomer(e){
+ e.preventDefault();const d=getData();const phone=document.getElementById('regPhone').value.trim();
+ if(d.customers.some(c=>c.phone===phone)){message('registerMsg','This mobile number is already registered.',true);return;}
+ d.customers.push({name:document.getElementById('regName').value.trim(),phone,email:document.getElementById('regEmail').value.trim(),password:document.getElementById('regPassword').value});
+ saveData(d);currentPhone=phone;localStorage.setItem('phonePayCurrent',phone);e.target.reset();showPage('dashboard');
+}
+function loginCustomer(e){
+ e.preventDefault();const d=getData(),phone=document.getElementById('loginPhone').value.trim(),pass=document.getElementById('loginPassword').value;
+ const c=d.customers.find(x=>x.phone===phone&&x.password===pass);
+ if(!c){message('loginMsg','Invalid mobile number or password.',true);return;}
+ currentPhone=phone;localStorage.setItem('phonePayCurrent',phone);e.target.reset();showPage('dashboard');
+}
+function getCurrentBill(){
+ const d=getData();const bills=d.bills.filter(b=>b.phone===currentPhone).sort((a,b)=>b.created-a.created);if(!bills.length)return null;
+ const b=bills[0],paid=d.payments.filter(p=>p.phone===currentPhone&&p.billId===b.id).reduce((s,p)=>s+Number(p.amount),0);
+ const today=new Date();today.setHours(0,0,0,0);const due=new Date(b.dueDate+'T00:00:00');
+ const days=Math.max(0,Math.floor((today-due)/86400000)),fine=days*10;
+ return {...b,fine,balance:Math.max(0,Number(b.amount)+fine-paid)};
+}
+function loadDashboard(){
+ const d=getData(),c=d.customers.find(x=>x.phone===currentPhone);
+ if(!c){showPage('login');return;}
+ const b=getCurrentBill();document.getElementById('welcome').textContent='Welcome, '+c.name;
+ document.getElementById('accountPhone').textContent=currentPhone;
+ document.getElementById('billAmount').textContent=b?money(b.amount):'No bill yet';
+ document.getElementById('dueDate').textContent=b?b.dueDate:'—';
+ document.getElementById('lateFine').textContent=b?money(b.fine):money(0);
+ document.getElementById('outstanding').textContent=b?money(b.balance):'—';
+}
+function loadPayment(){const b=getCurrentBill();document.getElementById('payBalance').textContent=b?money(b.balance):'No bill available';}
+function makePayment(e){
+ e.preventDefault();const b=getCurrentBill();if(!b){message('paymentMsg','No bill is available for your account.',true);return;}
+ const amount=Number(document.getElementById('payAmount').value),method=document.getElementById('payMethod').value;
+ if(amount<=0||amount>b.balance){message('paymentMsg','Enter an amount within your outstanding balance.',true);return;}
+ const d=getData(),receipt={id:'PAY'+Date.now(),billId:b.id,phone:currentPhone,amount,method,date:new Date().toLocaleString()};
+ d.payments.push(receipt);saveData(d);localStorage.setItem('phonePayLastReceipt',JSON.stringify(receipt));e.target.reset();showPage('receipt');loadReceipt();
+}
+function loadReceipt(){const r=JSON.parse(localStorage.getItem('phonePayLastReceipt')||'null');document.getElementById('receiptInfo').innerHTML=r?`<p><b>Receipt ID:</b> ${r.id}</p><p><b>Mobile Number:</b> ${r.phone}</p><p><b>Amount Paid:</b> ${money(r.amount)}</p><p><b>Payment Method:</b> ${r.method}</p><p><b>Date:</b> ${r.date}</p>`:'No receipt available.';}
+function loadHistory(){
+ const rows=getData().payments.filter(p=>p.phone===currentPhone).slice().reverse(),body=document.getElementById('historyRows');
+ body.innerHTML=rows.length?rows.map(p=>`<tr><td>${p.id}</td><td>${p.date}</td><td>${p.method}</td><td>${money(p.amount)}</td></tr>`).join(''):'<tr><td colspan="4">No payments made yet.</td></tr>';
+}
+function logout(){currentPhone='';localStorage.removeItem('phonePayCurrent');showPage('home');}
+function adminLogin(e){e.preventDefault();if(document.getElementById('adminUsername').value==='admin'&&document.getElementById('adminPassword').value==='admin123'){sessionStorage.setItem('phonePayAdmin','yes');e.target.reset();showPage('adminDashboard');}else message('adminLoginMsg','Invalid admin username or password.',true);}
+function adminLogout(){sessionStorage.removeItem('phonePayAdmin');showPage('home');}
+function saveBill(e){
+ e.preventDefault();if(sessionStorage.getItem('phonePayAdmin')!=='yes'){showPage('adminLogin');return;}
+ const d=getData(),phone=document.getElementById('billPhone').value.trim();
+ if(!d.customers.some(c=>c.phone===phone)){message('billMsg','Customer not found. Register the customer first.',true);return;}
+ const bill={id:'BILL'+Date.now(),phone,startDate:document.getElementById('startDate').value,endDate:document.getElementById('endDate').value,amount:Number(document.getElementById('newBillAmount').value),dueDate:document.getElementById('newDueDate').value,created:Date.now()};
+ d.bills.push(bill);saveData(d);e.target.reset();message('billMsg','Monthly bill added successfully.');loadAdminBills();
+}
+function loadAdminBills(){
+ if(sessionStorage.getItem('phonePayAdmin')!=='yes'){showPage('adminLogin');return;}
+ const bills=getData().bills.slice().reverse();document.getElementById('adminBillRows').innerHTML=bills.length?bills.map(b=>`<tr><td>${b.phone}</td><td>${b.startDate} to ${b.endDate}</td><td>${money(b.amount)}</td><td>${b.dueDate}</td></tr>`).join(''):'<tr><td colspan="4">No bills added yet.</td></tr>';
+}
+document.getElementById('registerForm').addEventListener('submit',registerCustomer);
+document.getElementById('loginForm').addEventListener('submit',loginCustomer);
+document.getElementById('paymentForm').addEventListener('submit',makePayment);
+document.getElementById('adminLoginForm').addEventListener('submit',adminLogin);
+document.getElementById('billForm').addEventListener('submit',saveBill);
+if(currentPhone && getData().customers.some(c=>c.phone===currentPhone)){}else{currentPhone='';}
+</script>
+</body>
+</html>
