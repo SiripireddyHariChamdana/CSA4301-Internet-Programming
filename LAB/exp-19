@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VetConnect | Animal Health Telemedicine</title>
+<style>
+:root{--green:#176b52;--dark:#123d32;--mint:#eaf6f0;--ink:#20332d;--muted:#687b73;--line:#dce9e2;--white:#fff;--orange:#f2a65a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6faf7;color:var(--ink)}
+header{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.nav{max-width:1100px;margin:auto;padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:800;color:var(--green)}.logo span{color:var(--orange)}
+nav{display:flex;gap:7px;flex-wrap:wrap}nav button{border:0;background:transparent;padding:9px 11px;border-radius:8px;color:var(--ink);cursor:pointer;font-weight:600}nav button:hover,nav button.active{background:var(--mint);color:var(--green)}
+main{max-width:1100px;margin:28px auto;padding:0 22px}.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(120deg,#e6f5ed,#f5fbf7);border-radius:20px;padding:48px 38px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center}
+.hero h1{font-size:38px;line-height:1.12;margin:0 0 14px;color:var(--dark)}.hero p{color:var(--muted);line-height:1.65;max-width:580px}
+.hero-art{font-size:100px;text-align:center}.btn{background:var(--green);color:white;border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer}.btn.secondary{background:#e8f3ed;color:var(--green)}.btn.orange{background:var(--orange);color:#352416}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;margin-top:22px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:19px;box-shadow:0 4px 16px #173d3010}.card h3{margin:0 0 8px;color:var(--dark)}.card p{color:var(--muted);line-height:1.5;font-size:14px}
+h2{color:var(--dark);margin:0 0 17px}.sub{color:var(--muted);margin-top:-8px;margin-bottom:20px}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:22px;max-width:760px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;font-weight:700;font-size:13px;color:#42574e}input,select,textarea{width:100%;padding:11px;border:1px solid #cbdcd2;border-radius:8px;margin-top:6px;font:inherit;background:#fff}textarea{min-height:95px;resize:vertical}.full{grid-column:1/-1}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px;border-radius:9px;background:var(--mint);color:var(--green);margin:12px 0;font-size:14px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:14px}th{background:#eaf5ef;color:var(--dark)}.tag{display:inline-block;background:#fff1dd;color:#87551d;padding:4px 8px;border-radius:20px;font-size:12px}
+.small{font-size:13px;color:var(--muted)}.empty{padding:22px;background:#fff;border:1px dashed #b8cfc1;border-radius:12px;color:var(--muted)}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:13px}
+@media(max-width:700px){.hero{grid-template-columns:1fr;padding:30px 23px}.hero h1{font-size:30px}.hero-art{font-size:70px}form{grid-template-columns:1fr}.full{grid-column:auto}main{margin-top:18px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">Vet<span>Connect</span> 🐾</div><nav id="nav">
+<button class="active" onclick="showPage('home',this)">Home</button>
+<button onclick="showPage('report',this)">Report Symptoms</button>
+<button onclick="showPage('consult',this)">Consultation</button>
+<button onclick="showPage('records',this)">My Requests</button>
+<button onclick="showPage('doctor',this)">Veterinarian</button>
+<button onclick="showPage('login',this)">Login</button>
+</nav></div></header>
+<main>
+<section id="home" class="page active">
+<div class="hero"><div><h1>Better animal care, from wherever you are.</h1><p>Connect farmers and pet owners with veterinarians. Share animal symptoms, images or recordings, request a consultation and follow the request status online.</p><button class="btn" onclick="showPage('report')">Report an Animal Health Issue</button></div><div class="hero-art">🐄 🐕 🩺</div></div>
+<div class="cards">
+<div class="card"><h3>📝 Report symptoms</h3><p>Describe the animal's condition and attach a photo, audio or video file for the veterinarian.</p></div>
+<div class="card"><h3>👩‍⚕️ Expert consultation</h3><p>Request a video, audio or chat consultation with a veterinarian.</p></div>
+<div class="card"><h3>📋 Track requests</h3><p>View submitted health requests, appointment details and veterinarian remarks.</p></div>
+</div>
+</section>
+<section id="report" class="page">
+<h2>Report Animal Health Symptoms</h2><p class="sub">Enter the animal details and explain the symptoms clearly.</p>
+<div class="panel"><form id="reportForm">
+<label>Farmer / Owner Name<input id="owner" required placeholder="Your name"></label>
+<label>Mobile Number<input id="phone" required pattern="[0-9]{10}" placeholder="10-digit mobile number"></label>
+<label>Animal Type<select id="animal" required><option value="">Select animal</option><option>Cow</option><option>Buffalo</option><option>Goat</option><option>Sheep</option><option>Dog</option><option>Cat</option><option>Poultry</option><option>Other</option></select></label>
+<label>Animal Name / Identification<input id="animalName" placeholder="e.g. Cow 02"></label>
+<label>Age<input id="age" placeholder="e.g. 3 years"></label>
+<label>Symptoms Started<select id="duration"><option>Today</option><option>1–3 days ago</option><option>4–7 days ago</option><option>More than a week ago</option></select></label>
+<label class="full">Symptoms and Description<textarea id="symptoms" required placeholder="Describe signs such as loss of appetite, fever, injury or unusual behaviour"></textarea></label>
+<label class="full">Attach Photo / Audio / Video (optional)<input id="attachment" type="file" accept="image/*,audio/*,video/*"></label>
+<div class="full"><button class="btn" type="submit">Submit Health Request</button></div>
+</form><div id="reportMsg"></div></div>
+</section>
+<section id="consult" class="page">
+<h2>Request a Veterinarian Consultation</h2><p class="sub">Choose how you would like to consult. This demo records the request.</p>
+<div class="panel"><form id="consultForm">
+<label>Request ID<input id="consultId" required placeholder="e.g. VC-123456"></label>
+<label>Consultation Mode<select id="mode"><option>Video consultation</option><option>Audio consultation</option><option>Chat consultation</option></select></label>
+<label>Preferred Date<input id="date" type="date" required></label>
+<label>Preferred Time<input id="time" type="time" required></label>
+<label class="full">Additional Message<textarea id="message" placeholder="Any additional information for the veterinarian"></textarea></label>
+<div class="full"><button class="btn" type="submit">Send Consultation Request</button></div>
+</form><div id="consultMsg"></div></div>
+</section>
+<section id="records" class="page">
+<h2>My Health Requests</h2><p class="sub">Enter the mobile number used when submitting the request.</p>
+<div class="panel"><label>Mobile Number<input id="searchPhone" placeholder="10-digit mobile number"></label><div class="actions"><button class="btn" onclick="findRecords()">View Requests</button><button class="btn secondary" onclick="renderAllRecords()">Show All Demo Records</button></div></div>
+<div id="recordResults" style="margin-top:18px"></div>
+</section>
+<section id="doctor" class="page">
+<h2>Veterinarian Dashboard</h2><p class="sub">Review submitted cases and update their status or remarks.</p>
+<div class="panel" style="margin-bottom:18px"><label>Veterinarian Access Code<input id="doctorCode" type="password" placeholder="Enter demo code"></label><div class="actions"><button class="btn" onclick="unlockDoctor()">Open Dashboard</button></div><p class="small">Demo code: doctor123</p><div id="doctorMsg"></div></div>
+<div id="doctorArea"></div>
+</section>
+<section id="login" class="page">
+<h2>Farmer / Owner Login</h2><p class="sub">A simple local demo profile to identify your submitted requests.</p>
+<div class="panel"><form id="loginForm"><label class="full">Mobile Number<input id="loginPhone" required pattern="[0-9]{10}" placeholder="Registered mobile number"></label><div class="full"><button class="btn" type="submit">Continue</button></div></form><div id="loginMsg"></div></div>
+</section>
+</main>
+<footer>VetConnect Animal Health Telemedicine Demo · For educational use</footer>
+<script>
+const getData=()=>JSON.parse(localStorage.getItem('vetRequests')||'[]');
+const saveData=d=>localStorage.setItem('vetRequests',JSON.stringify(d));
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');window.scrollTo(0,0)}
+document.getElementById('reportForm').addEventListener('submit',e=>{
+ e.preventDefault();const file=document.getElementById('attachment').files[0];const id='VC-'+Math.floor(100000+Math.random()*900000);
+ const item={id,owner:owner.value,phone:phone.value,animal:animal.value,animalName:animalName.value,age:age.value,duration:duration.value,symptoms:symptoms.value,fileName:file?file.name:'Not attached',status:'Submitted',remarks:'Awaiting veterinarian review',consultation:null,created:new Date().toLocaleString()};
+ const d=getData();d.unshift(item);saveData(d);document.getElementById('reportMsg').innerHTML=`<div class="notice">Request submitted successfully. Your Request ID is <b>${id}</b>. Save this ID for consultation.</div>`;e.target.reset();
+});
+document.getElementById('consultForm').addEventListener('submit',e=>{
+ e.preventDefault();let d=getData();const item=d.find(x=>x.id===consultId.value.trim());if(!item){consultMsg.innerHTML='<div class="notice">Request ID not found. Please check the ID.</div>';return}
+ item.consultation={mode:mode.value,date:date.value,time:time.value,message:message.value};item.status='Consultation Requested';saveData(d);consultMsg.innerHTML='<div class="notice">Consultation request saved successfully.</div>';e.target.reset();
+});
+function recordTable(items){if(!items.length)return '<div class="empty">No health requests found.</div>';return `<div class="panel"><table><tr><th>Request ID</th><th>Animal</th><th>Status</th><th>Veterinarian Remarks</th></tr>${items.map(x=>`<tr><td><b>${x.id}</b><br><span class="small">${x.created}</span></td><td>${x.animal} ${x.animalName||''}<br><span class="small">${x.symptoms}</span></td><td><span class="tag">${x.status}</span></td><td>${x.remarks||'—'}${x.consultation?`<br><span class="small">${x.consultation.mode} · ${x.consultation.date} ${x.consultation.time}</span>`:''}</td></tr>`).join('')}</table></div>`}
+function findRecords(){const p=searchPhone.value.trim();document.getElementById('recordResults').innerHTML=recordTable(getData().filter(x=>x.phone===p))}
+function renderAllRecords(){document.getElementById('recordResults').innerHTML=recordTable(getData())}
+function unlockDoctor(){if(doctorCode.value!=='doctor123'){doctorMsg.innerHTML='<span style="color:#b33">Incorrect access code.</span>';return}doctorMsg.innerHTML='<div class="notice">Dashboard unlocked.</div>';renderDoctor()}
+function renderDoctor(){const d=getData();doctorArea.innerHTML=d.length?`<div class="panel"><table><tr><th>Case</th><th>Symptoms / Attachment</th><th>Update Status</th><th>Remarks</th></tr>${d.map(x=>`<tr><td><b>${x.id}</b><br>${x.owner}<br>${x.phone}<br>${x.animal}</td><td>${x.symptoms}<br><span class="small">File: ${x.fileName}</span>${x.consultation?`<br><span class="small">${x.consultation.mode}: ${x.consultation.date} ${x.consultation.time}</span>`:''}</td><td><select id="st-${x.id}"><option ${x.status==='Submitted'?'selected':''}>Submitted</option><option ${x.status==='Under Review'?'selected':''}>Under Review</option><option ${x.status==='Consultation Requested'?'selected':''}>Consultation Requested</option><option ${x.status==='Appointment Confirmed'?'selected':''}>Appointment Confirmed</option><option ${x.status==='Advice Provided'?'selected':''}>Advice Provided</option><option ${x.status==='Closed'?'selected':''}>Closed</option></select><button class="btn" style="margin-top:6px" onclick="updateCase('${x.id}')">Save</button></td><td><textarea id="rm-${x.id}" style="min-width:150px;min-height:65px">${x.remarks||''}</textarea></td></tr>`).join('')}</table></div>`:'<div class="empty">No requests have been submitted yet.</div>'}
+function updateCase(id){const d=getData(),x=d.find(a=>a.id===id);x.status=document.getElementById('st-'+id).value;x.remarks=document.getElementById('rm-'+id).value;saveData(d);renderDoctor();doctorMsg.innerHTML='<div class="notice">Case updated successfully.</div>'}
+document.getElementById('loginForm').addEventListener('submit',e=>{e.preventDefault();localStorage.setItem('vetUserPhone',loginPhone.value);loginMsg.innerHTML='<div class="notice">Profile identified. You can now view requests using this mobile number.</div>';searchPhone.value=loginPhone.value});
+</script>
+</body></html>
