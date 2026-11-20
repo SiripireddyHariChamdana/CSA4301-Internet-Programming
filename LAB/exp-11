@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Finder | Real Estate</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7f8;color:#263238}
+header{background:#173b46;color:white;padding:16px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:24px;font-weight:bold}nav{display:flex;gap:6px;flex-wrap:wrap}button{border:0;padding:10px 13px;border-radius:6px;background:#df895d;color:white;font-weight:bold;cursor:pointer}nav button{background:transparent;color:white}button:hover{opacity:.85}
+main{max-width:1150px;margin:25px auto;padding:0 18px}.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(110deg,#173b46,#43818a);color:white;padding:42px 30px;border-radius:14px;margin-bottom:22px}.hero h1{font-size:36px;margin:0 0 12px}.hero p{line-height:1.6;max-width:650px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:white;border-radius:11px;padding:16px;box-shadow:0 3px 12px #0000000d}
+.photo{height:145px;border-radius:9px;background:linear-gradient(135deg,#d6e8e8,#e9d8ca);display:flex;align-items:center;justify-content:center;font-size:55px}
+.price{font-size:19px;font-weight:bold;color:#bd6541}.muted{color:#68777b}.tag{background:#e7f2f1;color:#245e62;padding:5px 9px;border-radius:20px;font-size:12px}
+input,select,textarea{width:100%;padding:11px;margin:6px 0 12px;border:1px solid #cbd5d7;border-radius:6px;font:inherit}label{font-weight:bold;font-size:14px}form{background:white;padding:18px;border-radius:10px;max-width:560px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:170px}
+.notice{padding:13px;background:#e7f2f1;border-radius:8px;margin:15px 0}table{width:100%;border-collapse:collapse;background:white;margin:12px 0}td,th{padding:11px;border-bottom:1px solid #e5e9e9;text-align:left}th{background:#e7f2f1}
+footer{text-align:center;padding:25px;color:#718084}
+@media(max-width:600px){.hero h1{font-size:28px}header{justify-content:center}nav{justify-content:center}}
+</style></head>
+<body>
+<header><div class="logo">⌂ HOME FINDER</div><nav>
+<button onclick="go('home')">Home</button><button onclick="go('properties')">Properties</button><button onclick="go('saved')">Saved Searches</button><button onclick="go('favorites')">Favourites</button><button onclick="go('agents')">Agents</button><button onclick="go('viewings')">Viewings</button><button onclick="go('account')">Login / Register</button><button onclick="go('admin')">Admin</button>
+</nav></header>
+<main>
+<section id="home" class="page active">
+<div class="hero"><span class="tag">FIND A PLACE TO CALL HOME</span><h1>Discover Your Perfect Property</h1><p>Search residential and commercial properties by location, budget, property type and amenities. Save your search and explore properties that match your needs.</p><button onclick="go('properties')">Explore Properties</button></div>
+<h2>Find properties by category</h2><div class="grid">
+<div class="card"><div class="photo">🏡</div><h3>Independent Houses</h3><button onclick="quickType('House')">View Houses</button></div>
+<div class="card"><div class="photo">🏢</div><h3>Apartments</h3><button onclick="quickType('Apartment')">View Apartments</button></div>
+<div class="card"><div class="photo">🌳</div><h3>Residential Land</h3><button onclick="quickType('Land')">View Land</button></div>
+<div class="card"><div class="photo">🏬</div><h3>Commercial</h3><button onclick="quickType('Commercial')">View Commercial</button></div>
+</div><div class="notice"><b>Property updates:</b> Save your preferred location and budget to find matching listings again.</div>
+<h2>Featured Properties</h2><div id="featured" class="grid"></div>
+</section>
+<section id="properties" class="page"><h2>Search Properties</h2><p class="muted">Choose your preferred area, budget and property type.</p>
+<div class="card"><div class="row"><div><label>Location</label><input id="location" placeholder="e.g. Chennai"></div><div><label>Maximum budget (₹)</label><input id="budget" type="number" placeholder="e.g. 8000000"></div><div><label>Property type</label><select id="type"><option value="">All types</option><option>House</option><option>Apartment</option><option>Land</option><option>Commercial</option></select></div></div><label>Amenities</label><select id="amenity"><option value="">Any amenity</option><option>Parking</option><option>Garden</option><option>Lift</option><option>Security</option></select><button onclick="searchProperties()">Search</button> <button onclick="saveSearch()">Save Search</button></div>
+<p id="searchMsg" class="muted"></p><div id="propertyResults" class="grid"></div></section>
+<section id="propertyDetails" class="page"><h2>Property Details</h2><div id="details"></div></section>
+<section id="saved" class="page"><h2>My Saved Search Criteria</h2><p class="muted">Reuse a previous search instead of entering the same criteria again.</p><div id="savedSearches"></div></section>
+<section id="favorites" class="page"><h2>Favourite Properties</h2><div id="favoriteList" class="grid"></div></section>
+<section id="agents" class="page"><h2>Find Agents & Companies</h2><input id="agentSearch" placeholder="Search agent or company" oninput="renderAgents()"><div id="agentList" class="grid"></div><h3>Property Advertisements</h3><div class="grid"><div class="card"><h3>Home Loan Support</h3><p>Explore home-loan information from a financial service provider.</p><a href="https://www.rbi.org.in/" target="_blank">Visit financial information website</a></div><div class="card"><h3>Interior Design Ideas</h3><p>Get ideas to plan your new home.</p><a href="https://www.archdaily.com/" target="_blank">Explore design articles</a></div></div></section>
+<section id="viewings" class="page"><h2>Schedule a Property Viewing</h2><form onsubmit="bookViewing(event)"><label>Property</label><select id="viewProperty"></select><label>Your name</label><input id="viewName" required><label>Email</label><input id="viewEmail" type="email" required><label>Preferred date</label><input id="viewDate" type="date" required><label>Preferred time</label><select id="viewTime"><option>10:00 AM</option><option>12:00 PM</option><option>3:00 PM</option><option>5:00 PM</option></select><button>Request Viewing</button></form><div id="viewingMsg" class="notice"></div><h3>Viewing Requests</h3><div id="viewingList"></div></section>
+<section id="account" class="page"><h2>Buyer Account</h2><div class="grid"><form onsubmit="register(event)"><h3>Register</h3><label>Full name</label><input id="regName" required><label>Username</label><input id="regUser" required><label>Email</label><input id="regEmail" type="email" required><label>Password</label><input id="regPass" type="password" required><button>Create Account</button></form><form onsubmit="login(event)"><h3>Buyer Login</h3><label>Username</label><input id="loginUser" required><label>Password</label><input id="loginPass" type="password" required><button>Login</button></form></div><p id="accountMsg" class="notice">Create an account or log in to the demo website.</p></section>
+<section id="admin" class="page"><h2>Administrator Dashboard</h2><form onsubmit="adminLogin(event)"><label>Username</label><input id="adminUser" required><label>Password</label><input id="adminPass" type="password" required><button>Login as Admin</button></form><div id="adminPanel" style="display:none"><h3>Add Property Listing</h3><form onsubmit="addProperty(event)"><label>Property name</label><input id="newName" required><label>Location</label><input id="newLocation" required><label>Price (₹)</label><input id="newPrice" type="number" required><label>Type</label><select id="newType"><option>House</option><option>Apartment</option><option>Land</option><option>Commercial</option></select><label>Amenities (comma separated)</label><input id="newAmenity"><label>Description</label><textarea id="newDesc" required></textarea><button>Add Listing</button></form><h3>Property Records</h3><div id="adminProperties"></div><h3>Website Visitor Records</h3><p id="visitorCount"></p><h3>Viewing Requests</h3><div id="adminViewings"></div></div></section>
+</main><footer>© 2026 Home Finder | Real Estate Search Platform</footer>
+<script>
+const initial=[
+{id:1,name:'Modern Family House',location:'Chennai',price:8500000,type:'House',amenities:['Parking','Garden','Security'],desc:'A spacious family house in a peaceful residential neighbourhood.',icon:'🏡'},
+{id:2,name:'City View Apartment',location:'Chennai',price:5200000,type:'Apartment',amenities:['Lift','Parking','Security'],desc:'A modern apartment close to schools, shops and public transport.',icon:'🏢'},
+{id:3,name:'Green Acres Plot',location:'Coimbatore',price:2800000,type:'Land',amenities:['Garden'],desc:'Residential plot suitable for building your dream home.',icon:'🌳'},
+{id:4,name:'Business Office Space',location:'Bengaluru',price:9500000,type:'Commercial',amenities:['Lift','Parking','Security'],desc:'Commercial office space in a well-connected business area.',icon:'🏬'},
+{id:5,name:'Compact Starter Home',location:'Madurai',price:3900000,type:'House',amenities:['Parking'],desc:'An affordable home with essential facilities.',icon:'🏠'}
+];
+let properties=JSON.parse(localStorage.getItem('hfProps')||'null')||initial;
+let users=JSON.parse(localStorage.getItem('hfUsers')||'[]'),saved=JSON.parse(localStorage.getItem('hfSaved')||'[]'),favs=JSON.parse(localStorage.getItem('hfFavs')||'[]'),viewings=JSON.parse(localStorage.getItem('hfViews')||'[]');
+let visitors=Number(localStorage.getItem('hfVisitors')||0)+1;localStorage.setItem('hfVisitors',visitors);
+function store(){localStorage.setItem('hfProps',JSON.stringify(properties));localStorage.setItem('hfUsers',JSON.stringify(users));localStorage.setItem('hfSaved',JSON.stringify(saved));localStorage.setItem('hfFavs',JSON.stringify(favs));localStorage.setItem('hfViews',JSON.stringify(viewings))}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='saved')renderSaved();if(id==='favorites')renderFavs();if(id==='agents')renderAgents();if(id==='viewings')renderViewings();window.scrollTo(0,0)}
+function card(p){return `<div class="card"><div class="photo">${p.icon||'🏠'}</div><span class="tag">${p.type}</span><h3>${p.name}</h3><p>📍 ${p.location}</p><p class="price">₹${Number(p.price).toLocaleString('en-IN')}</p><p class="muted">${p.desc}</p><button onclick="showDetails(${p.id})">View Details</button> <button onclick="toggleFav(${p.id})">♡ Favourite</button></div>`}
+function renderFeatured(){featured.innerHTML=properties.slice(0,3).map(card).join('')}
+function quickType(t){go('properties');type.value=t;searchProperties()}
+function searchProperties(){let l=location.value.trim().toLowerCase(),b=Number(budget.value)||Infinity,t=type.value,a=amenity.value;let found=properties.filter(p=>(!l||p.location.toLowerCase().includes(l))&&p.price<=b&&(!t||p.type===t)&&(!a||p.amenities.includes(a)));propertyResults.innerHTML=found.length?found.map(card).join(''):'<p>No properties match these criteria.</p>';searchMsg.textContent=found.length+' matching property listing(s) found.'}
+function saveSearch(){let s={location:location.value,budget:budget.value,type:type.value,amenity:amenity.value};if(!s.location&&!s.budget&&!s.type&&!s.amenity){alert('Enter at least one search criterion');return}saved.push(s);store();alert('Search criteria saved');}
+function renderSaved(){savedSearches.innerHTML=saved.length?saved.map((s,i)=>`<div class="card"><p>Location: ${s.location||'Any'} | Budget: ${s.budget||'Any'} | Type: ${s.type||'All'} | Amenity: ${s.amenity||'Any'}</p><button onclick="reuseSearch(${i})">Use This Search</button> <button onclick="deleteSearch(${i})">Delete</button></div>`).join(''):'<p>No saved searches yet.</p>'}
+function reuseSearch(i){let s=saved[i];go('properties');location.value=s.location;budget.value=s.budget;type.value=s.type;amenity.value=s.amenity;searchProperties()}
+function deleteSearch(i){saved.splice(i,1);store();renderSaved()}
+function showDetails(id){let p=properties.find(x=>x.id===id);details.innerHTML=`<div class="card"><div class="photo">${p.icon||'🏠'}</div><h2>${p.name}</h2><p class="price">₹${Number(p.price).toLocaleString('en-IN')}</p><p>Location: ${p.location}</p><p>Type: ${p.type}</p><p>Amenities: ${p.amenities.join(', ')||'Not specified'}</p><p>${p.desc}</p><h3>Location Map</h3><iframe width="100%" height="260" style="border:0;border-radius:8px" loading="lazy" src="https://www.google.com/maps?q=${encodeURIComponent(p.location)}&output=embed"></iframe><p><button onclick="toggleFav(${p.id})">Add to Favourites</button> <button onclick="prepareViewing(${p.id})">Schedule Viewing</button></p></div>`;go('propertyDetails')}
+function toggleFav(id){favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id];store();alert('Favourites updated')}
+function renderFavs(){favoriteList.innerHTML=favs.length?properties.filter(p=>favs.includes(p.id)).map(card).join(''):'<p>No favourite properties saved.</p>'}
+const agents=[{name:'Arun Kumar',company:'City Homes Realty',phone:'9000000011',area:'Chennai'},{name:'Priya Sharma',company:'Green Door Properties',phone:'9000000022',area:'Coimbatore'},{name:'Rahul Nair',company:'Metro Estate Group',phone:'9000000033',area:'Bengaluru'}];
+function renderAgents(){let q=agentSearch.value.toLowerCase();agentList.innerHTML=agents.filter(a=>(a.name+a.company+a.area).toLowerCase().includes(q)).map(a=>`<div class="card"><h3>${a.name}</h3><p>${a.company}</p><p>Area: ${a.area}</p><p>Contact: ${a.phone}</p><button onclick="alert('Contact request noted (demo).')">Contact Agent</button></div>`).join('')||'<p>No agents found.</p>'}
+function prepareViewing(id){go('viewings');viewProperty.value=String(id)}
+function bookViewing(e){e.preventDefault();viewings.push({property:viewProperty.value,name:viewName.value,email:viewEmail.value,date:viewDate.value,time:viewTime.value});store();viewingMsg.textContent='Your property viewing request has been recorded.';e.target.reset();renderViewings()}
+function renderViewings(){viewProperty.innerHTML=properties.map(p=>`<option value="${p.id}">${p.name} - ${p.location}</option>`).join('');viewingList.innerHTML=viewings.length?viewings.map(v=>{let p=properties.find(p=>p.id==v.property);return `<div class="card">${p?p.name:'Property'} | ${v.name} | ${v.date} at ${v.time}</div>`}).join(''):'<p>No viewing requests yet.</p>'}
+function register(e){e.preventDefault();if(users.some(u=>u.username===regUser.value)){accountMsg.textContent='Username already exists.';return}users.push({name:regName.value,username:regUser.value,email:regEmail.value,password:regPass.value});store();accountMsg.textContent='Registration successful. You can now log in.';e.target.reset()}
+function login(e){e.preventDefault();let u=users.find(u=>u.username===loginUser.value&&u.password===loginPass.value);accountMsg.textContent=u?'Welcome, '+u.name+'!':'Invalid username or password.'}
+function adminLogin(e){e.preventDefault();if(adminUser.value==='admin'&&adminPass.value==='admin123'){adminPanel.style.display='block';renderAdmin()}else alert('Invalid admin login')}
+function addProperty(e){e.preventDefault();properties.push({id:Date.now(),name:newName.value,location:newLocation.value,price:Number(newPrice.value),type:newType.value,amenities:newAmenity.value.split(',').map(x=>x.trim()).filter(Boolean),desc:newDesc.value,icon:'🏘️'});store();e.target.reset();renderAdmin();renderFeatured();alert('Property listing added')}
+function renderAdmin(){adminProperties.innerHTML='<table><tr><th>Property</th><th>Location</th><th>Price</th><th>Action</th></tr>'+properties.map(p=>`<tr><td>${p.name}</td><td>${p.location}</td><td>₹${p.price}</td><td><button onclick="removeProperty(${p.id})">Delete</button></td></tr>`).join('')+'</table>';visitorCount.textContent='Total website visits recorded on this browser: '+visitors;adminViewings.innerHTML=viewings.map(v=>`<p>${v.name} - ${v.date} - ${v.email}</p>`).join('')||'No requests yet.'}
+function removeProperty(id){properties=properties.filter(p=>p.id!==id);store();renderAdmin();renderFeatured()}
+renderFeatured();renderAgents();renderViewings();
+</script></body></html>
